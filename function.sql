@@ -1,5 +1,5 @@
 --------------------------------------------------------
---  File created - четверг-августа-03-2017   
+--  File created - С‡РµС‚РІРµСЂРі-Р°РІРіСѓСЃС‚Р°-03-2017   
 --------------------------------------------------------
 --------------------------------------------------------
 --  DDL for Function A_TEST
@@ -33,17 +33,17 @@ RETURN DATE AS
     hh24 NUMBER;
     MI NUMBER;
 BEGIN
-    execute immediate 'alter session set NLS_TERRITORY = AMERICA'; --дни недели в американском стиле: 1-sun, 2-mon...
+    execute immediate 'alter session set NLS_TERRITORY = AMERICA'; --РґРЅРё РЅРµРґРµР»Рё РІ Р°РјРµСЂРёРєР°РЅСЃРєРѕРј СЃС‚РёР»Рµ: 1-sun, 2-mon...
     par := parArray('MI', 'HH24', 'D', 'DD', 'MM'); 
     v_row := dateParValuesArray();
     rValues := dateParArray();
     
     select length(v_string) - length(replace(v_string,';',null)) 
     into semicolons
-    from dual; --количество запятых
+    from dual; --РєРѕР»РёС‡РµСЃС‚РІРѕ Р·Р°РїСЏС‚С‹С…
     semicolon := 0;
   
-    --1. Парсим строку
+    --1. РџР°СЂСЃРёРј СЃС‚СЂРѕРєСѓ
     FOR FOO IN (
         SELECT REGEXP_SUBSTR (v_string, '[^;]+',1,LEVEL) str
         FROM DUAL
@@ -53,7 +53,7 @@ BEGIN
         IF semicolon <= semicolons then
             select length(FOO.str) - length(replace(FOO.str,',',null)) 
             into commas
-            from dual; --количество ;
+            from dual; --РєРѕР»РёС‡РµСЃС‚РІРѕ ;
             comma := 0;
             
             FOR BAR IN (
@@ -74,12 +74,12 @@ BEGIN
         end if;
         semicolon := semicolon +1;
     end loop;
-    select v_date into i_date from dual; --добавляем минутку, чтобы не выдало то же время
+    select v_date into i_date from dual; --РґРѕР±Р°РІР»СЏРµРј РјРёРЅСѓС‚РєСѓ, С‡С‚РѕР±С‹ РЅРµ РІС‹РґР°Р»Рѕ С‚Рѕ Р¶Рµ РІСЂРµРјСЏ
     YY := to_char(i_date,'YY');
     
-    --2. ищем следующую дату 
+    --2. РёС‰РµРј СЃР»РµРґСѓСЋС‰СѓСЋ РґР°С‚Сѓ 
     LOOP
-        --2.1. определяем месяц
+        --2.1. РѕРїСЂРµРґРµР»СЏРµРј РјРµСЃСЏС†
         FOR i in 1..rValues(5).count 
         LOOP
             if to_number(to_char(i_date, par(5))) < rValues(5)(i) then
@@ -98,13 +98,13 @@ BEGIN
             continue;
         end if;
         
-        --2.2. определяем день
+        --2.2. РѕРїСЂРµРґРµР»СЏРµРј РґРµРЅСЊ
         FOR i in 1..rValues(4).count 
         LOOP
             if to_number(to_char(i_date, par(4))) <= rValues(4)(i) then
                 DD := rValues(4)(i);
                 dayweek := 'N';
-                for n in 1..rValues(3).count -- проверяем день недели
+                for n in 1..rValues(3).count -- РїСЂРѕРІРµСЂСЏРµРј РґРµРЅСЊ РЅРµРґРµР»Рё
                 LOOP
                     if rValues(3)(n) = to_number(to_char(to_date( DD || '.' || MM || '.' || YY, 'dd.mm.yy'), 'D')) then
                         if to_number(to_char(i_date, par(4))) = rValues(4)(i) then
@@ -126,7 +126,7 @@ BEGIN
             end if;
         end loop;
 
-        --2.3. определяем час
+        --2.3. РѕРїСЂРµРґРµР»СЏРµРј С‡Р°СЃ
         hh24 := null;
         FOR i in 1..rValues(2).count 
         LOOP
@@ -142,7 +142,7 @@ BEGIN
             continue;
         end if;
     
-        --2.4. определяем минуту
+        --2.4. РѕРїСЂРµРґРµР»СЏРµРј РјРёРЅСѓС‚Сѓ
         MI := null;
         FOR i in 1..rValues(1).count 
         LOOP
@@ -158,7 +158,7 @@ BEGIN
             continue;
         end if;
         
-        --если получили ту же дату, сдвигаем на минутку и запускаем заново
+        --РµСЃР»Рё РїРѕР»СѓС‡РёР»Рё С‚Сѓ Р¶Рµ РґР°С‚Сѓ, СЃРґРІРёРіР°РµРј РЅР° РјРёРЅСѓС‚РєСѓ Рё Р·Р°РїСѓСЃРєР°РµРј Р·Р°РЅРѕРІРѕ
         if i_date = v_date then
             select i_date+1/24/60 into i_date from dual;
             continue;

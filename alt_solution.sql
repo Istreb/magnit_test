@@ -1,4 +1,4 @@
---добавляем job с параметрами как в примере
+--РґРѕР±Р°РІР»СЏРµРј job СЃ РїР°СЂР°РјРµС‚СЂР°РјРё РєР°Рє РІ РїСЂРёРјРµСЂРµ
 DBMS_SCHEDULER.CREATE_JOB (
                 job_name => '"CLAIM"."COMPLICATED_SCHEDULE_J"',
                 job_type => 'PLSQL_BLOCK',
@@ -12,5 +12,5 @@ DBMS_SCHEDULER.CREATE_JOB (
                 comments => ''
             );
             
---следующий селект выдает следующую дату запуска job'а
+--СЃР»РµРґСѓСЋС‰РёР№ СЃРµР»РµРєС‚ РІС‹РґР°РµС‚ СЃР»РµРґСѓСЋС‰СѓСЋ РґР°С‚Сѓ Р·Р°РїСѓСЃРєР° job'Р°
 select next_run_date from all_scheduler_jobs where job_name='COMPLICATED_SCHEDULE_J';
